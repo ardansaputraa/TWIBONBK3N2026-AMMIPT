@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Twibonze | Buat Twibbon Mudah</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: linear-gradient(135deg, #ff7a18, #ffb347);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+    header p {
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    .card h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    .upload-area {
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      color: #666;
+    }
+    .upload-area:hover {
+      border-color: #ff7a18;
+      color: #ff7a18;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .preview {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .preview img {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+    button {
+      background: #ff7a18;
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:hover {
+      background: #e96a0f;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Twibonze</h1>
+    <p>Buat Twibbon Online dengan Mudah & Cepat</p>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>1. Upload Foto Kamu</h2>
+      <label class="upload-area">
+        Klik untuk upload foto
+        <input type="file" id="photoInput" accept="image/*" />
+      </label>
+      <div class="preview" id="photoPreview"></div>
+    </div>
+
+    <div class="card">
+      <h2>2. Upload Frame Twibbon</h2>
+      <label class="upload-area">
+        Klik untuk upload frame twibbon (PNG)
+        <input type="file" id="frameInput" accept="image/*" />
+      </label>
+      <div class="preview" id="framePreview"></div>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <h2>3. Hasil Twibbon</h2>
+      <canvas id="resultCanvas" style="max-width:100%; border-radius:12px;"></canvas>
+      <br />
+      <button onclick="downloadImage()">Download Twibbon</button>
+    </div>
+  </div>
+
+  <footer>
+    © 2026 Twibonze • Simple Twibbon Generator
+  </footer>
+
+  <script>
+    const photoInput = document.getElementById('photoInput');
+    const frameInput = document.getElementById('frameInput');
+    const canvas = document.getElementById('resultCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let photoImg = new Image();
+    let frameImg = new Image();
+
+    function drawCanvas() {
+      if (!photoImg.src || !frameImg.src) return;
+      canvas.width = photoImg.width;
+      canvas.height = photoImg.height;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(photoImg, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+    }
+
+    photoInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        photoImg.onload = drawCanvas;
+        photoImg.src = reader.result;
+        document.getElementById('photoPreview').innerHTML = `<img src="${reader.result}">`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    frameInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        frameImg.onload = drawCanvas;
+        frameImg.src = reader.result;
+        document.getElementById('framePreview').innerHTML = `<img src="${reader.result}">`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function downloadImage() {
+      const link = document.createElement('a');
+      link.download = 'twibonze.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+  </script>
+
+</body>
+</html>
